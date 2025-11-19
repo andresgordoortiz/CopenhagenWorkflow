@@ -1,5 +1,6 @@
 import os
 import math
+from tqdm import tqdm 
 from tifffile import imread
 from napatrackmater.clustering import Clustering
 
@@ -16,7 +17,7 @@ ycalibration = 1
 zcalibration = 1
 
 
-for fname in files:
+for fname in tqdm(files):
         
         seg_image = imread(os.path.join(segmentation_directory, fname))
         time_key = 0 
