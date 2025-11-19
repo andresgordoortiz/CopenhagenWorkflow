@@ -38,7 +38,7 @@ for fname in tqdm(files):
 
         timed_cluster_label = cluster_eval.timed_cluster_label
 
-        print(timed_cluster_label.keys(), timed_cluster_label.values() )
+       
         (
             output_labels,
             output_cluster_centroid,
@@ -47,7 +47,7 @@ for fname in tqdm(files):
             output_eigenvalues,
             output_dimensions,
             output_cloud_surface_area,
-        ) = timed_cluster_label[time_key]
+        ) = timed_cluster_label[str(time_key)]
 
         for i in range(len(output_cluster_centroid)):
                 centroid = output_cluster_centroid[i]
