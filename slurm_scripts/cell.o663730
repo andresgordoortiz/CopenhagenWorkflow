@@ -1,0 +1,25 @@
+/linkhome/rech/gengoq01/uzj81mi/.conda/envs/capedenv/lib/python3.10/site-packages/kornia/feature/lightglue.py:44: FutureWarning: `torch.cuda.amp.custom_fwd(args...)` is deprecated. Please use `torch.amp.custom_fwd(args..., device_type='cuda')` instead.
+  @torch.cuda.amp.custom_fwd(cast_inputs=torch.float32)
+2025-06-30 12:44:43.017837: I tensorflow/core/platform/cpu_feature_guard.cc:193] This TensorFlow binary is optimized with oneAPI Deep Neural Network Library (oneDNN) to use the following CPU instructions in performance-critical operations:  AVX2 FMA
+To enable them in other operations, rebuild TensorFlow with the appropriate compiler flags.
+2025-06-30 12:44:48.132762: E tensorflow/stream_executor/cuda/cuda_blas.cc:2981] Unable to register cuBLAS factory: Attempting to register factory for plugin cuBLAS when one has already been registered
+2025-06-30 12:44:53.160235: W tensorflow/stream_executor/platform/default/dso_loader.cc:64] Could not load dynamic library 'libnvinfer.so.7'; dlerror: libnvinfer.so.7: cannot open shared object file: No such file or directory; LD_LIBRARY_PATH: /linkhome/rech/gengoq01/uzj81mi/.conda/envs/capedenv/lib/:/linkhome/rech/gengoq01/uzj81mi/.conda/envs/capedenv/lib/python3.10/site-packages/nvidia/cudnn/lib:/linkhome/rech/gengoq01/uzj81mi/.conda/envs/capedenv/lib/:/linkhome/rech/gengoq01/uzj81mi/.conda/envs/capedenv/lib/python3.10/site-packages/nvidia/cudnn/lib:/linkhome/rech/gengoq01/uzj81mi/.conda/envs/capedenv/lib/:/linkhome/rech/gengoq01/uzj81mi/.conda/envs/capedenv/lib/python3.10/site-packages/nvidia/cudnn/lib:/linkhome/rech/gengoq01/uzj81mi/.conda/envs/capedenv/lib/:/linkhome/rech/gengoq01/uzj81mi/.conda/envs/capedenv/lib/python3.10/site-packages/nvidia/cudnn/lib:/lib64/slurm:/linkhome/rech/gengoq01/uzj81mi/.conda/envs/capedenv/lib/:/linkhome/rech/gengoq01/uzj81mi/.conda/envs/capedenv/lib/
+2025-06-30 12:44:53.161427: W tensorflow/stream_executor/platform/default/dso_loader.cc:64] Could not load dynamic library 'libnvinfer_plugin.so.7'; dlerror: libnvinfer_plugin.so.7: cannot open shared object file: No such file or directory; LD_LIBRARY_PATH: /linkhome/rech/gengoq01/uzj81mi/.conda/envs/capedenv/lib/:/linkhome/rech/gengoq01/uzj81mi/.conda/envs/capedenv/lib/python3.10/site-packages/nvidia/cudnn/lib:/linkhome/rech/gengoq01/uzj81mi/.conda/envs/capedenv/lib/:/linkhome/rech/gengoq01/uzj81mi/.conda/envs/capedenv/lib/python3.10/site-packages/nvidia/cudnn/lib:/linkhome/rech/gengoq01/uzj81mi/.conda/envs/capedenv/lib/:/linkhome/rech/gengoq01/uzj81mi/.conda/envs/capedenv/lib/python3.10/site-packages/nvidia/cudnn/lib:/linkhome/rech/gengoq01/uzj81mi/.conda/envs/capedenv/lib/:/linkhome/rech/gengoq01/uzj81mi/.conda/envs/capedenv/lib/python3.10/site-packages/nvidia/cudnn/lib:/lib64/slurm:/linkhome/rech/gengoq01/uzj81mi/.conda/envs/capedenv/lib/:/linkhome/rech/gengoq01/uzj81mi/.conda/envs/capedenv/lib/
+2025-06-30 12:44:53.161463: W tensorflow/compiler/tf2tensorrt/utils/py_utils.cc:38] TF-TRT Warning: Cannot dlopen some TensorRT libraries. If you would like to use Nvidia GPU with TensorRT, please make sure the missing libraries mentioned above are installed properly.
+Traceback (most recent call last):
+  File "/gpfswork/rech/jsy/uzj81mi/CopenhagenWorkflow/train_gbr_neural_net_morpho.py", line 40, in <module>
+    train_gbr_neural_net(
+  File "/lustre/fswork/projects/rech/jsy/uzj81mi/NapaTrackMater/src/napatrackmater/Trackvector.py", line 2860, in train_gbr_neural_net
+    mitosis_inception.setup_gbr_h5_datasets()
+  File "/lustre/fswork/projects/rech/jsy/uzj81mi/KapoorLabs-Lightning/src/kapoorlabs_lightning/lightning_trainer.py", line 232, in setup_gbr_h5_datasets
+    self.dataset_train = H5MitosisDataset(
+  File "/lustre/fswork/projects/rech/jsy/uzj81mi/KapoorLabs-Lightning/src/kapoorlabs_lightning/pytorch_datasets.py", line 152, in __init__
+    self.data_label = h5py.File(self.h5_file, "r")
+  File "/linkhome/rech/gengoq01/uzj81mi/.conda/envs/capedenv/lib/python3.10/site-packages/h5py/_hl/files.py", line 562, in __init__
+    fid = make_fid(name, mode, userblock_size, fapl, fcpl, swmr=swmr)
+  File "/linkhome/rech/gengoq01/uzj81mi/.conda/envs/capedenv/lib/python3.10/site-packages/h5py/_hl/files.py", line 235, in make_fid
+    fid = h5f.open(name, flags, fapl=fapl)
+  File "h5py/_objects.pyx", line 54, in h5py._objects.with_phil.wrapper
+  File "h5py/_objects.pyx", line 55, in h5py._objects.with_phil.wrapper
+  File "h5py/h5f.pyx", line 102, in h5py.h5f.open
+FileNotFoundError: [Errno 2] Unable to synchronously open file (unable to open file: name = '/lustre/fsn1/projects/rech/jsy/uzj81mi/Mari_Data_Training/track_training_data/inception_cell_type_nuclei_.h5', errno = 2, error message = 'No such file or directory', flags = 0, o_flags = 0)
