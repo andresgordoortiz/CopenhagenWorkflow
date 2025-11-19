@@ -29,6 +29,7 @@ for fname in tqdm(files):
                         label_image = seg_image,
                         axes = axes,
                         num_points = 2048,
+                        compute_with_autoencoder=False
                     )
         
         cluster_eval._create_cluster_labels()
