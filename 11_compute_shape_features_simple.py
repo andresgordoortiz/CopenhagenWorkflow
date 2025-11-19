@@ -30,12 +30,15 @@ for fname in tqdm(files):
                         axes = axes,
                         num_points = 2048,
                         compute_with_autoencoder=False,
-                        model = None
+                        model = None,
+                        key = time_key
                     )
         
         cluster_eval._create_cluster_labels()
 
         timed_cluster_label = cluster_eval.timed_cluster_label
+
+        print(timed_cluster_label.keys(), timed_cluster_label.values() )
         (
             output_labels,
             output_cluster_centroid,
