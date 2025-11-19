@@ -4,7 +4,7 @@ from tifffile import imread
 from napatrackmater.clustering import Clustering
 
 
-segmentation_directory = 'path/seg/label/images'
+segmentation_directory = '/lustre/fsn1/projects/rech/jsy/uzj81mi/Mari_Data_Oneat/Mari_Test_Dataset_Analysis/split_seg_timelapses/'
 
 
 files = os.listdir(segmentation_directory)
