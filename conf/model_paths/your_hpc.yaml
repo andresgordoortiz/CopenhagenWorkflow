@@ -1,0 +1,78 @@
+# Model paths for your HPC
+# Place in: conf/model_paths/your_hpc.yaml
+
+# ============================================================
+# BASE DIRECTORIES
+# ============================================================
+# Change to your actual model storage location
+model_dir: '/data/models/'
+
+# ============================================================
+# SEGMENTATION MODELS
+# ============================================================
+
+# StarDist 3D for nuclei
+star_model_dir: '/data/models/StarDist3D/'
+# Use pretrained model name or path to your trained model
+star_nuclei_model_name: '3D_demo'  # Default pretrained, or your custom
+
+# UNet models (for CARE denoising, ROI detection)
+unet_model_dir: '/data/models/Unet3D/'
+roi_model_dir: '/data/models/MASKUNET/'
+den_model_dir: '/data/models/CARE/'
+
+unet_nuclei_model_name: null       # Set if you have custom model
+unet_membrane_model_name: null
+roi_nuclei_model_name: null
+edge_enhancement_model_name: null   # CARE model for membrane enhancement
+
+# ============================================================
+# CELLPOSE MODELS
+# ============================================================
+cellpose3D_model_dir: '/data/models/CellPose3D/'
+cellpose2D_model_dir: '/data/models/CellPose/'
+
+# Model names - use pretrained or your custom trained
+# Options for pretrained: 'cyto', 'cyto2', 'cyto3', 'nuclei'
+cellpose3D_model_name: null
+cellpose2D_model_name: 'cyto3'              # Good general cell model
+cellpose2D_nuclei_model_name: 'nuclei'      # For nuclear segmentation
+cellpose_model_type: 'cyto3'
+
+# ============================================================
+# ONEAT (MITOSIS DETECTION) MODELS
+# ============================================================
+oneat_nuclei_model_dir: '/data/models/Oneat/'
+# NOTE: Pretrained Oneat is for Xenopus - may need retraining for zebrafish
+oneat_nuclei_model_name: 'oneat_xenopus_densenet'
+
+# ============================================================
+# TRACKING MODELS
+# ============================================================
+track_model_dir: '/data/models/TrackModels/'
+track_model_training_data_dir: '/data/training/track_training_data/'
+
+track_shape_model_name: null
+track_dynamic_model_name: null
+track_shape_dynamic_model_name: null
+track_shape_model_no_latent_name: null
+track_dynamic_model_no_latent_name: null
+track_shape_dynamic_model_no_latent_name: null
+
+# ============================================================
+# CELLSHAPE / POINT CLOUD MODELS
+# ============================================================
+cloud_nuclei_model_dir: '/data/models/NucleiCloud/'
+cloud_membrane_model_dir: '/data/models/MembraneCloud/'
+
+cloud_nuclei_model_name: null
+cloud_nuclei_model_json: null
+cloud_membrane_model_name: null
+cloud_membrane_model_json: null
+
+# ============================================================
+# TRAINING DATA FILENAMES
+# ============================================================
+nuclei_npz_filename: 'zebrafish_nuclei'
+membrane_npz_filename: 'zebrafish_membrane'
+roi_npz_filename: 'zebrafish_roi'

@@ -1,0 +1,71 @@
+# Oneat parameters - zebrafish adjusted
+# Place in: conf/parameters/oneat_zebrafish.yaml
+
+# ============================================================
+# NETWORK ARCHITECTURE
+# ============================================================
+startfilter: 64
+start_kernel: 7
+mid_kernel: 3
+learning_rate: 1.0e-4
+batch_size: 16          # Reduce if GPU memory limited
+epochs: 250
+
+# DenseNet depth configuration
+depth: {'depth_0': 12, 'depth_1': 24, 'depth_2': 16}
+reduction: 0.5
+stage_number: 3
+
+# ============================================================
+# INPUT PATCH SIZE
+# ============================================================
+# Adjust based on your cell size and temporal resolution
+# Zebrafish cells are smaller, so patches can be smaller
+imagex: 48              # Reduced from 64 for smaller zebrafish cells
+imagey: 48
+imagez: 8               # Z-depth of patch
+
+# Temporal context
+size_tminus: 1          # Frames before detection
+size_tplus: 1           # Frames after detection
+tshift: 0
+
+# ============================================================
+# DETECTION PARAMETERS
+# ============================================================
+# Tiling for inference
+n_tiles: [1, 4, 4]      # [Z, Y, X]
+
+# Detection thresholds - adjust for your data
+event_threshold: [1, 0.999]     # [normal, mitosis]
+event_confidence: [1, 0.9]
+
+# Non-max suppression
+nms_space: 8            # Reduced for smaller zebrafish cells (was 10)
+nms_time: 2             # Frames for temporal NMS
+
+# ============================================================
+# EVENT CLASSES
+# ============================================================
+# Binary classification: normal vs mitosis
+event_name: ['normal', 'mitosis']
+event_label: [0, 1]
+
+# Position encoding
+event_position_name: ["x", "y", "z", "t", "h", "w", "d", "c"]
+event_position_label: [0, 1, 2, 3, 4, 5, 6, 7]
+
+# ============================================================
+# PREPROCESSING
+# ============================================================
+file_type: '*.tif'
+normalizeimage: True
+show: False
+
+# ============================================================
+# TRAINING CONFIGURATION
+# ============================================================
+categories_json: 'categories.json'
+cord_json: 'cord.json'
+training_class: NEATDenseVollNet
+training_config: volume_config

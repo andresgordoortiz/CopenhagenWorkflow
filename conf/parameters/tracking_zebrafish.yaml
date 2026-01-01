@@ -1,0 +1,76 @@
+# Tracking parameters - zebrafish gastrulation optimized
+# Place in: conf/parameters/tracking_zebrafish.yaml
+
+# ============================================================
+# TRAINING / MODEL PARAMETERS
+# ============================================================
+batch_size: 64
+learning_rate: 1.0e-3
+num_clusters: 7           # Number of cell types to cluster
+accelerator: 'cuda'
+devices: 1
+
+# ============================================================
+# SPATIAL CALIBRATION - CRITICAL!
+# ============================================================
+# These MUST match your microscope settings!
+# S-BIAD499 dataset values:
+calibration_z: 1.774      # Z voxel size in micrometers
+calibration_y: 0.5        # Y pixel size in micrometers  
+calibration_x: 0.5        # X pixel size in micrometers
+
+# Scale factors for feature extraction
+# Adjust based on image dimensions
+scale_z: 8                # Downsample factor in Z
+scale_xy: 16              # Downsample factor in XY
+
+# ============================================================
+# INPUT FORMAT
+# ============================================================
+axes: 'TZYX'
+
+# ============================================================
+# TRACKMATE INTEGRATION
+# ============================================================
+enhance_trackmate_xml: True
+
+# ============================================================
+# ONEAT INTEGRATION
+# ============================================================
+# Threshold for accepting Oneat mitosis detections
+# Higher = more stringent (fewer false positives)
+oneat_threshold_cutoff: 0.9999
+
+# ============================================================
+# CELL SHAPE ENCODING
+# ============================================================
+compute_with_autoencoder: False  # Set True if using CellShape models
+
+# ============================================================
+# TRACKMATE PARAMETERS (for 05_automate_trackmate.py)
+# ============================================================
+# Adjust based on expected cell movement between frames
+# S-BIAD499: 42 sec intervals, cells move ~2-5 µm/min at gastrulation
+
+# Maximum linking distance (µm) - how far can a cell move between frames?
+# Zebrafish gastrulation: cells can move 2-5 µm/min
+# At 42 sec interval: max ~3-4 µm displacement
+linking_max_distance: 5.0
+
+# Gap closing - can bridge gaps when cell disappears temporarily
+gap_closing_max_distance: 8.0
+gap_closing_max_frame_gap: 3    # Max frames a cell can be missing
+
+# Track filtering
+min_track_length: 5             # Minimum frames in a valid track
+
+# ============================================================
+# CELL FATE CLASSIFICATION
+# ============================================================
+# Feature types to use for clustering/classification
+use_shape_features: True
+use_dynamic_features: True
+use_neighbor_features: True
+
+# Normalization method: 'standard', 'minmax', 'robust'
+feature_normalization: 'standard'

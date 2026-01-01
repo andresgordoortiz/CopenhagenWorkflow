@@ -1,0 +1,83 @@
+# S-BIAD499 Dataset - Wildtype Embryo 1
+# Zebrafish gastrulation - drl:GFP + H2B-RFP
+# Stock & Pauli, IMP Vienna
+# 
+# Dataset specifics:
+#   Microscope: Zeiss Z1 Light Sheet, 10x objective
+#   Dimensions: T=100, Z=149, C=2, Y=1200, X=1200
+#   Pixel size: 0.65 µm (XY), 1.774 µm (Z)
+#   Time interval: 42 seconds
+#   Channels: C0=drl:GFP (mesoderm), C1=H2B-RFP (nuclei)
+
+# ============================================================
+# DATASET IDENTIFICATION
+# ============================================================
+timelapse_nuclei_to_track: 'wildtype1'
+timelapse_membrane_to_track: 'wildtype1'
+
+# ============================================================
+# BASE DIRECTORIES - ADJUST TO YOUR PATHS!
+# ============================================================
+base_directory: '/scratch/andres.ortiz/zebrafish/sbiad499/'
+
+# Raw merged data location
+dual_channel_split_directory: '/scratch/andres.ortiz/zebrafish/sbiad499/split_nuclei_membrane_raw/'
+
+# ============================================================
+# NUCLEI PROCESSING DIRECTORIES
+# ============================================================
+timelapse_nuclei_directory: '/scratch/andres.ortiz/zebrafish/sbiad499/nuclei_timelapses/'
+timelapse_seg_nuclei_directory: '/scratch/andres.ortiz/zebrafish/sbiad499/seg_nuclei_timelapses/'
+timelapse_seg_nuclei_vollseg_directory: '/scratch/andres.ortiz/zebrafish/sbiad499/seg_nuclei_vollseg_timelapses/'
+
+# ============================================================
+# MEMBRANE/MESODERM PROCESSING DIRECTORIES  
+# ============================================================
+timelapse_membrane_directory: '/scratch/andres.ortiz/zebrafish/sbiad499/membrane_timelapses/'
+timelapse_seg_membrane_directory: '/scratch/andres.ortiz/zebrafish/sbiad499/seg_membrane_timelapses/'
+
+# ============================================================
+# MITOSIS DETECTION OUTPUTS
+# ============================================================
+timelapse_oneat_directory: '/scratch/andres.ortiz/zebrafish/sbiad499/oneat_detections/'
+timelapse_oneat_vollseg_directory: '/scratch/andres.ortiz/zebrafish/sbiad499/oneat_vollseg_detections/'
+
+# ============================================================
+# TRACKING OUTPUTS
+# ============================================================
+tracking_directory: '/scratch/andres.ortiz/zebrafish/sbiad499/tracking/'
+tracking_vollseg_directory: '/scratch/andres.ortiz/zebrafish/sbiad499/tracking_vollseg/'
+
+# Region of interest (null = process entire volume)
+timelapse_region_of_interest_directory: null
+
+# ============================================================
+# CALIBRATION - S-BIAD499 SPECIFIC VALUES
+# ============================================================
+# Zeiss Z1 Light Sheet, 10x objective
+# From publication: 1.774 µm z-spacing, 42 sec intervals
+
+# Voxel size in micrometers [X, Y, Z]
+voxel_size_xyz: [0.65, 0.65, 1.774]
+
+# Time interval between frames (seconds)
+time_interval_seconds: 42
+
+# Variable time calibration (empty = constant intervals)
+variable_t_calibration: {}
+
+# ============================================================
+# IMAGE DIMENSIONS (for reference)
+# ============================================================
+# T: 100 timepoints
+# Z: 149 slices
+# C: 2 channels (merged)
+# Y: 1200 pixels
+# X: 1200 pixels
+
+# ============================================================
+# OUTPUT CSV FILES
+# ============================================================
+oneat_nuclei_csv_file: '/scratch/andres.ortiz/zebrafish/sbiad499/oneat_detections/oneat_mitosis_locations_nuclei_wildtype1.csv'
+oneat_membrane_csv_file: '/scratch/andres.ortiz/zebrafish/sbiad499/oneat_detections/oneat_mitosis_locations_membrane_wildtype1.csv'
+oneat_nuclei_vollseg_csv_file: '/scratch/andres.ortiz/zebrafish/sbiad499/oneat_vollseg_detections/oneat_mitosis_locations_nuclei_vollseg_wildtype1.csv'

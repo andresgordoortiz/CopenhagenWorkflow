@@ -1,0 +1,136 @@
+# S-BIAD499 Dataset - Segmentation Parameters
+# Optimized for zebrafish gastrulation (Stock & Pauli, IMP)
+#
+# Cell characteristics at shield-to-bud stage:
+#   - Nuclei diameter: ~8-12 µm → ~12-18 pixels at 0.65 µm/px
+#   - Cell body: ~15-25 µm → ~23-38 pixels
+#   - Deep cells are smaller, EVL cells are larger
+
+# ============================================================
+# IMAGE PROCESSING
+# ============================================================
+# Large images (1200x1200x149) - use appropriate patch sizes
+patch_size: [8, 256, 256]
+overlap: [2, 32, 32]
+crop: [2, 32, 32]
+
+# Tiling for GPU memory management
+# Image is 1200x1200x149 - need substantial tiling
+n_tiles: [2, 4, 4]  # [Z, Y, X] - increase if memory errors
+
+axes: 'ZYX'
+file_type: '*.tif'
+
+# ============================================================
+# CHANNEL ASSIGNMENTS - S-BIAD499
+# ============================================================
+# C0 = drl:GFP (mesoderm marker) - use as "membrane" channel
+# C1 = H2B-RFP (all nuclei)
+channel_membrane: 0
+channel_nuclei: 1
+
+# ============================================================
+# CELLPOSE PARAMETERS - S-BIAD499 OPTIMIZED
+# ============================================================
+# Zebrafish gastrulation cells at 0.65 µm/px:
+#   - Nuclei: ~8-12 µm diameter = 12-18 pixels
+#   - Cells: ~15-25 µm diameter = 23-38 pixels
+# Use diameter ~15 for nuclei, ~30 for cells
+
+diameter_cellpose: 15.0      # For nuclear segmentation
+diameter_cellpose_membrane: 30.0  # For cell segmentation (if using)
+
+stitch_threshold: 0.5        # IoU threshold for 3D stitching
+flow_threshold: 0.4          # Default, lower = more cells
+cellprob_threshold: 0.0      # Default, more negative = more permissive
+
+# Anisotropy correction for Z
+# anisotropy = z_spacing / xy_spacing = 1.774 / 0.65 = 2.73
+anisotropy: 2.73
+
+gpu: True
+do_3D: False                 # 2D + stitching (more reliable for LSFM)
+z_thresh: 2
+
+# Model selection
+cellpose_model_path: null    # null = use built-in 'cyto3' or 'nuclei'
+
+# ============================================================
+# STARDIST / VOLLSEG NUCLEI PARAMETERS
+# ============================================================
+# Zebrafish nuclei at gastrulation:
+#   - Diameter: ~8-12 µm
+#   - Volume: ~270-900 µm³
+#   - At 0.65×0.65×1.774 µm/voxel: ~360-1200 voxels
+
+min_size: 50                 # Minimum nucleus volume (voxels)
+max_size: 2000               # Maximum nucleus volume (voxels)  
+min_size_mask: 20
+
+# Probability thresholds (null = use model defaults)
+prob_thresh_nuclei: 0.5      # Adjust if under/over-segmenting
+nms_thresh_nuclei: 0.3       # Lower = more merging of overlapping
+
+prob_thresh_membrane: null
+nms_thresh_membrane: null
+
+UseProbability: True
+ExpandLabels: False
+slice_merge: False
+
+# ============================================================
+# NORMALIZATION
+# ============================================================
+donormalize: True
+lower_perc: 1.0              # Robust to outliers
+upper_perc: 99.8
+
+# ============================================================
+# STARDIST NETWORK PARAMETERS
+# ============================================================
+n_rays: 96                   # Number of radial directions
+in_channels: 1
+out_channels: 4
+out_activation: 'tanh'
+norm_method: 'instance'
+background_weight: 1
+flow_weight: 1
+feat_channels: [32, 64, 128]
+num_levels: 3
+depth: 3
+kern_size: 3
+startfilter: 64
+
+# ============================================================
+# TRAINING (if retraining models)
+# ============================================================
+batch_size: 4                # Reduce for large images
+learning_rate: 1.0e-4
+epochs: 200
+validation_split: 0.1
+n_patches_per_image: 8
+num_gpu: 1
+
+network_type: "unet"
+generate_npz: False
+grid_x: 1
+grid_y: 1
+grid_z: 1
+dounet: True
+train_unet: True
+train_star: True
+train_loss: "mae"
+seedpool: False
+use_gpu_opencl: True
+erosion_iterations: 0
+
+# ============================================================
+# OUTPUT
+# ============================================================
+load_data_sequence: True
+save_dir: null
+Name: 'sbiad499_wildtype1'
+
+# For Cellpose training
+patch_x: 512
+patch_y: 512

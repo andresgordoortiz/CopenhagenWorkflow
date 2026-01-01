@@ -1,0 +1,88 @@
+# S-BIAD499 Dataset - Oneat Mitosis Detection Parameters
+# Optimized for zebrafish gastrulation (Stock & Pauli, IMP)
+#
+# Mitosis characteristics during gastrulation:
+#   - Division time: ~15-20 minutes
+#   - At 42 sec intervals: mitosis spans ~20-30 frames
+#   - Nuclear diameter during division: ~10-15 µm
+
+# ============================================================
+# NETWORK ARCHITECTURE
+# ============================================================
+startfilter: 64
+start_kernel: 7
+mid_kernel: 3
+learning_rate: 1.0e-4
+batch_size: 8                # Reduce if GPU memory limited
+epochs: 250
+
+# DenseNet depth configuration
+depth: {'depth_0': 12, 'depth_1': 24, 'depth_2': 16}
+reduction: 0.5
+stage_number: 3
+
+# ============================================================
+# INPUT PATCH SIZE - S-BIAD499 OPTIMIZED
+# ============================================================
+# Zebrafish cells at 0.65 µm/px:
+#   - 48 pixels ≈ 31 µm (captures dividing cell + neighbors)
+#   - Z=8 slices ≈ 14 µm (captures nuclear volume)
+
+imagex: 48                   # X patch size (pixels)
+imagey: 48                   # Y patch size (pixels)  
+imagez: 8                    # Z patch size (slices)
+
+# Temporal context
+# At 42 sec intervals, ±1 frame = ±42 sec window
+size_tminus: 1               # Frames before detection
+size_tplus: 1                # Frames after detection
+tshift: 0
+
+# ============================================================
+# DETECTION PARAMETERS
+# ============================================================
+# Tiling for large 1200x1200 images
+n_tiles: [1, 4, 4]           # [Z, Y, X]
+
+# Detection thresholds
+# High threshold for mitosis to reduce false positives
+event_threshold: [1, 0.999]  # [normal, mitosis]
+event_confidence: [1, 0.9]
+
+# ============================================================
+# NON-MAXIMUM SUPPRESSION - S-BIAD499 OPTIMIZED
+# ============================================================
+# Zebrafish nuclei ~8-12 µm diameter
+# NMS space should be ~1 nucleus diameter
+# 10 µm / 0.65 µm/px ≈ 15 pixels, but use µm directly
+
+nms_space: 10                # Spatial radius in µm
+nms_time: 3                  # Temporal window in frames (~2 min)
+
+# ============================================================
+# EVENT CLASSES
+# ============================================================
+event_name: ['normal', 'mitosis']
+event_label: [0, 1]
+
+# Position encoding
+event_position_name: ["x", "y", "z", "t", "h", "w", "d", "c"]
+event_position_label: [0, 1, 2, 3, 4, 5, 6, 7]
+
+# ============================================================
+# PREPROCESSING
+# ============================================================
+donormalize: True
+lower_perc: 1.0
+upper_perc: 99.8
+
+# Data augmentation (for training)
+flip: True
+rotation: True
+elastic_deform: False
+
+# ============================================================
+# OUTPUT
+# ============================================================
+save_predictions: True
+visualize: False
