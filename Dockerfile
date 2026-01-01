@@ -162,11 +162,11 @@ RUN pip install "numpy<2" && rm -rf ~/.cache/pip /tmp/*
 #===============================================================================
 WORKDIR /opt
 
-# Download Fiji - use explicit URL and verify download
-RUN wget --no-verbose -O fiji-linux64.tar.gz https://downloads.imagej.net/fiji/latest/fiji-linux64.tar.gz && \
-    echo "Downloaded Fiji:" && ls -lh fiji-linux64.tar.gz && \
-    tar -xzf fiji-linux64.tar.gz && \
-    rm fiji-linux64.tar.gz && \
+# Download Fiji from Oxford mirror (new official location)
+RUN wget --no-verbose -O fiji-linux64.zip https://downloads.micron.ox.ac.uk/fiji_update/mirrors/fiji-latest/fiji-latest-linux64-jdk.zip && \
+    echo "Downloaded Fiji:" && ls -lh fiji-linux64.zip && \
+    unzip -q fiji-linux64.zip && \
+    rm fiji-linux64.zip && \
     echo "Extracted Fiji:" && ls -la /opt/Fiji.app/ | head -10 && \
     chmod +x /opt/Fiji.app/ImageJ-linux64
 
