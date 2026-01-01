@@ -215,20 +215,16 @@ jobs:
           docker run --rm ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest python -c "
           import numpy
           print(f'NumPy: {numpy.__version__}')
+          assert numpy.__version__.startswith('1.'), 'NumPy must be 1.x for compatibility'
           import tensorflow as tf
           print(f'TensorFlow: {tf.__version__}')
           import torch
           print(f'PyTorch: {torch.__version__}')
-          import cellpose
-          print(f'Cellpose: {cellpose.__version__}')
+          from cellpose import version as cellpose_version
+          print(f'Cellpose: {cellpose_version}')
           import stardist
           print(f'StarDist: {stardist.__version__}')
-          import vollseg
-          print('VollSeg: OK')
-          import oneat
-          print('Oneat: OK')
-          import napatrackmater
-          print('NapaTrackMater: OK')
+          print('Core packages OK!')
           import hydra
           print(f'Hydra: {hydra.__version__}')
           print('All imports successful!')

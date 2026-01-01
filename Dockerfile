@@ -154,6 +154,9 @@ RUN pip install \
     ipywidgets \
     && rm -rf ~/.cache/pip /tmp/*
 
+# Force NumPy back to 1.x (required for PyTorch/TensorFlow compatibility)
+RUN pip install "numpy<2" && rm -rf ~/.cache/pip /tmp/*
+
 #===============================================================================
 # Install Fiji with TrackMate (combined and cleaned up)
 #===============================================================================
@@ -186,4 +189,4 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
     CMD python -c "import tensorflow; import torch; import cellpose" || exit 1
 
 # Default command
-CMD ["python", "-c", "import tensorflow as tf; import torch; import cellpose; print(f'TensorFlow: {tf.__version__}'); print(f'PyTorch: {torch.__version__}'); print(f'Cellpose: {cellpose.__version__}'); print(f'CUDA (TF): {len(tf.config.list_physical_devices(\"GPU\"))} GPUs'); print(f'CUDA (PyTorch): {torch.cuda.is_available()}')"]
+CMD ["python", "-c", "import tensorflow as tf; import torch; from cellpose import version; print(f'TensorFlow: {tf.__version__}'); print(f'PyTorch: {torch.__version__}'); print(f'Cellpose: {version}'); print(f'CUDA (TF): {len(tf.config.list_physical_devices(\"GPU\"))} GPUs'); print(f'CUDA (PyTorch): {torch.cuda.is_available()}')"]
