@@ -163,29 +163,30 @@ RUN pip install "numpy<2" && rm -rf ~/.cache/pip /tmp/*
 WORKDIR /opt
 
 # Download Fiji from Oxford mirror (new official location)
+# New package extracts to /opt/Fiji with executable fiji-linux-x64
 RUN wget --no-verbose -O fiji-linux64.zip https://downloads.micron.ox.ac.uk/fiji_update/mirrors/fiji-latest/fiji-latest-linux64-jdk.zip && \
-    echo "Downloaded Fiji:" && ls -lh fiji-linux64.zip && \
     unzip -q fiji-linux64.zip && \
     rm fiji-linux64.zip && \
-    echo "Extracted contents:" && ls -la /opt/ && \
-    # Find and rename the Fiji directory (might be Fiji.app or fiji-linux64 etc)
-    if [ -d "/opt/Fiji.app" ]; then echo "Fiji.app found"; \
-    elif [ -d "/opt/fiji-linux64" ]; then mv /opt/fiji-linux64 /opt/Fiji.app; \
-    else FIJI_DIR=$(ls -d /opt/*[Ff]iji* 2>/dev/null | head -1) && mv "$FIJI_DIR" /opt/Fiji.app; fi && \
-    echo "Fiji.app contents:" && ls -la /opt/Fiji.app/ | head -10 && \
-    chmod +x /opt/Fiji.app/ImageJ-linux64
+    mv /opt/Fiji /opt/Fiji.app && \
+    chmod +x /opt/Fiji.app/fiji-linux-x64 && \
+    echo "Fiji.app contents:" && ls -la /opt/Fiji.app/ | head -10
 
 # Update Fiji and add TrackMate-Oneat (separate step, allow failures)
-RUN /opt/Fiji.app/ImageJ-linux64 --headless --update update 2>/dev/null || true && \
-    /opt/Fiji.app/ImageJ-linux64 --headless --update add-update-site "TrackMate-Oneat" \
+RUN /opt/Fiji.app/fiji-linux-x64 --headless --update update 2>/dev/null || true && \
+    /opt/Fiji.app/fiji-linux-x64 --headless --update add-update-site "TrackMate-Oneat" \
         "https://sites.imagej.net/TrackMate-Oneat/" 2>/dev/null || true && \
-    /opt/Fiji.app/ImageJ-linux64 --headless --update update 2>/dev/null || true && \
+    /opt/Fiji.app/fiji-linux-x64 --headless --update update 2>/dev/null || true && \
     rm -rf /opt/Fiji.app/update /tmp/*
 
-# Verify Fiji installation
-RUN echo "Verifying Fiji installation:" && \
-    ls -la /opt/Fiji.app/ImageJ-linux64 && \
-    /opt/Fiji.app/ImageJ-linux64 --headless --help 2>&1 | head -3 || echo "Fiji help check done"
+# Verify Fiji installation and create symlinks
+RUN ln -sf /opt/Fiji.app/fiji-linux-x64 /usr/local/bin/fiji && \
+    echo "Verifying Fiji installation:" && \
+    ls -la /opt/Fiji.app/fiji-linux-x64 && \
+    /opt/Fiji.app/fiji-linux-x64 --headless --help 2>&1 | head -3 || echo "Fiji help check done"
+
+# Set Fiji environment
+ENV FIJI_HOME="/opt/Fiji.app"
+ENV PATH="/opt/Fiji.app:$PATH"
 
 #===============================================================================
 # Finalize

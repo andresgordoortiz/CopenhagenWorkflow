@@ -230,10 +230,10 @@ jobs:
           print('All imports successful!')
           "
           
-          # Test Fiji (use full path)
+          # Test Fiji (use full path with new executable name)
           echo "Testing Fiji..."
-          docker run --rm ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest /opt/Fiji.app/ImageJ-linux64 --headless --help 2>&1 | head -5 || echo "Fiji binary check"
-          docker run --rm ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest ls -la /opt/Fiji.app/ImageJ-linux64 || echo "Fiji not found"
+          docker run --rm ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest /opt/Fiji.app/fiji-linux-x64 --headless --help 2>&1 | head -5 || echo "Fiji binary check"
+          docker run --rm ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest ls -la /opt/Fiji.app/fiji-linux-x64 || echo "Fiji not found"
           
           echo "All tests passed!"
       
