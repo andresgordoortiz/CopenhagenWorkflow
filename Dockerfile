@@ -167,7 +167,12 @@ RUN wget --no-verbose -O fiji-linux64.zip https://downloads.micron.ox.ac.uk/fiji
     echo "Downloaded Fiji:" && ls -lh fiji-linux64.zip && \
     unzip -q fiji-linux64.zip && \
     rm fiji-linux64.zip && \
-    echo "Extracted Fiji:" && ls -la /opt/Fiji.app/ | head -10 && \
+    echo "Extracted contents:" && ls -la /opt/ && \
+    # Find and rename the Fiji directory (might be Fiji.app or fiji-linux64 etc)
+    if [ -d "/opt/Fiji.app" ]; then echo "Fiji.app found"; \
+    elif [ -d "/opt/fiji-linux64" ]; then mv /opt/fiji-linux64 /opt/Fiji.app; \
+    else FIJI_DIR=$(ls -d /opt/*[Ff]iji* 2>/dev/null | head -1) && mv "$FIJI_DIR" /opt/Fiji.app; fi && \
+    echo "Fiji.app contents:" && ls -la /opt/Fiji.app/ | head -10 && \
     chmod +x /opt/Fiji.app/ImageJ-linux64
 
 # Update Fiji and add TrackMate-Oneat (separate step, allow failures)
