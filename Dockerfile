@@ -132,8 +132,8 @@ RUN pip install \
     # Configuration
     hydra-core==1.3.2 \
     omegaconf==2.3.0 \
-    # Image I/O
-    tifffile==2023.12.9 \
+    # Image I/O (tifffile must be <2023.3.15 for aicsimageio)
+    "tifffile>=2021.8.30,<2023.3.15" \
     imageio==2.33.0 \
     aicsimageio==4.14.0 \
     nd2==0.7.1 \
