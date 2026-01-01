@@ -1,0 +1,80 @@
+# Docker build ignore file
+# Prevents unnecessary files from being included in the Docker build context
+
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Documentation (not needed in container)
+*.md
+!README.md
+docs/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+.eggs/
+*.egg
+
+# Virtual environments
+venv/
+env/
+ENV/
+.venv/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb
+
+# Data files (should be mounted, not built in)
+*.tif
+*.tiff
+*.h5
+*.hdf5
+*.zarr
+*.csv
+*.xml
+
+# Model files (should be mounted)
+*.h5
+*.hdf5
+*.ckpt
+*.pt
+*.pth
+*.weights
+
+# Logs and outputs
+logs/
+*.log
+*.out
+*.err
+
+# SLURM
+slurm/*.out
+slurm/*.err
+
+# Test files
+tests/
+test_*.py
+
+# Build artifacts
+*.sif
+build/
+dist/
+
+# Temp files
+tmp/
+temp/
+*.tmp
