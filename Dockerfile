@@ -114,10 +114,10 @@ RUN pip install \
     cellpose==3.0.1 \
     stardist==0.8.5 \
     csbdeep==0.7.4 \
-    vollseg==2.4.3 \
+    vollseg \
     # Detection and tracking
-    oneat==1.0.4 \
-    napatrackmater==1.4.5 \
+    oneat \
+    napatrackmater \
     caped-ai \
     && rm -rf ~/.cache/pip /tmp/*
 
