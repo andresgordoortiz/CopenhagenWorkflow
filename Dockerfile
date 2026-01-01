@@ -134,7 +134,7 @@ RUN pip install \
     omegaconf==2.3.0 \
     # Image I/O
     tifffile==2023.12.9 \
-    imageio==2.33.1 \
+    imageio==2.33.0 \
     aicsimageio==4.14.0 \
     nd2==0.7.1 \
     czifile \
@@ -145,7 +145,7 @@ RUN pip install \
     h5py==3.10.0 \
     zarr==2.16.1 \
     numba==0.58.1 \
-    lxml==5.0.0 \
+    "lxml>=4.6,<5" \
     # ML extras
     xgboost==2.0.3 \
     lightgbm==4.2.0 \
