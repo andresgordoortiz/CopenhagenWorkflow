@@ -158,24 +158,29 @@ RUN pip install \
 RUN pip install "numpy<2" && rm -rf ~/.cache/pip /tmp/*
 
 #===============================================================================
-# Install Fiji with TrackMate (combined and cleaned up)
+# Install Fiji with TrackMate
 #===============================================================================
 WORKDIR /opt
 
-RUN wget -q https://downloads.imagej.net/fiji/latest/fiji-linux64.tar.gz && \
+# Download Fiji - use explicit URL and verify download
+RUN wget --no-verbose -O fiji-linux64.tar.gz https://downloads.imagej.net/fiji/latest/fiji-linux64.tar.gz && \
+    echo "Downloaded Fiji:" && ls -lh fiji-linux64.tar.gz && \
     tar -xzf fiji-linux64.tar.gz && \
     rm fiji-linux64.tar.gz && \
-    chmod +x /opt/Fiji.app/ImageJ-linux64 && \
-    # Update and add TrackMate-Oneat
-    /opt/Fiji.app/ImageJ-linux64 --headless --update update 2>/dev/null || true && \
+    echo "Extracted Fiji:" && ls -la /opt/Fiji.app/ | head -10 && \
+    chmod +x /opt/Fiji.app/ImageJ-linux64
+
+# Update Fiji and add TrackMate-Oneat (separate step, allow failures)
+RUN /opt/Fiji.app/ImageJ-linux64 --headless --update update 2>/dev/null || true && \
     /opt/Fiji.app/ImageJ-linux64 --headless --update add-update-site "TrackMate-Oneat" \
         "https://sites.imagej.net/TrackMate-Oneat/" 2>/dev/null || true && \
     /opt/Fiji.app/ImageJ-linux64 --headless --update update 2>/dev/null || true && \
-    # Create symlinks
-    ln -sf /opt/Fiji.app/ImageJ-linux64 /usr/local/bin/fiji && \
-    ln -sf /opt/Fiji.app/ImageJ-linux64 /usr/local/bin/imagej && \
-    # Clean up Fiji update cache
     rm -rf /opt/Fiji.app/update /tmp/*
+
+# Verify Fiji installation
+RUN echo "Verifying Fiji installation:" && \
+    ls -la /opt/Fiji.app/ImageJ-linux64 && \
+    /opt/Fiji.app/ImageJ-linux64 --headless --help 2>&1 | head -3 || echo "Fiji help check done"
 
 #===============================================================================
 # Finalize
