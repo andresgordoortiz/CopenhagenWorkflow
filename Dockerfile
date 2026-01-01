@@ -126,29 +126,28 @@ RUN pip install \
 #===============================================================================
 RUN pip install \
     # Visualization
-    "napari[all]==0.4.19" \
+    "napari[all]" \
     napari-animation \
     napari-fast4dreg \
     # Configuration
-    hydra-core==1.3.2 \
-    omegaconf==2.3.0 \
-    # Image I/O (tifffile must be <2023.3.15 for aicsimageio)
-    "tifffile>=2021.8.30,<2023.3.15" \
-    imageio==2.33.0 \
-    aicsimageio==4.14.0 \
-    nd2==0.7.1 \
+    hydra-core \
+    omegaconf \
+    # Image I/O
+    tifffile \
+    imageio \
+    nd2 \
     czifile \
     # Utilities
-    natsort==8.4.0 \
-    tqdm==4.66.1 \
-    joblib==1.3.2 \
-    h5py==3.10.0 \
-    zarr==2.16.1 \
-    numba==0.58.1 \
-    "lxml>=4.6,<5" \
+    natsort \
+    tqdm \
+    joblib \
+    h5py \
+    zarr \
+    numba \
+    lxml \
     # ML extras
-    xgboost==2.0.3 \
-    lightgbm==4.2.0 \
+    xgboost \
+    lightgbm \
     # Jupyter
     jupyter \
     ipykernel \
