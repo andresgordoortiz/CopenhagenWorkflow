@@ -137,6 +137,7 @@ RUN pip install \
     imageio \
     nd2 \
     czifile \
+    aicspylibczi \
     # Utilities
     natsort \
     tqdm \
