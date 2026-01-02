@@ -170,40 +170,42 @@ def read_czi_position(czi_path: str, position: int = 0) -> Tuple[np.ndarray, Dic
         czi = CziFile(czi_path)
 
         # Read the specific scene/position
-        # The read_image method returns (data, shape_dict)
-        data, shape = czi.read_image(S=position)
+        # read_image returns (data, shape_list) where shape_list is [(dim, size), ...]
+        data, shape_list = czi.read_image(S=position)
 
-        # Reshape to TZCYX format
-        # aicspylibczi returns in dimension order based on the CZI file
-        # We need to standardize to TZCYX
+        # Convert shape_list to dict: [('B', 1), ('S', 1), ('C', 4), ...] -> {'B': 1, 'S': 1, 'C': 4, ...}
+        shape_dict = {dim: size for dim, size in shape_list}
 
-        # Get the dimension order from the returned shape
-        current_axes = list(shape.keys())
-        current_shape = list(shape.values())
+        # Get dimension order from czi.dims (e.g., "BSTCZYX")
+        dims_str = czi.dims
 
-        # Build target shape TZCYX
+        # We need to rearrange data to TZCYX format
+        # First, identify current dimension positions
+        current_axes = [dim for dim, _ in shape_list]
+
+        # Squeeze out singleton dimensions that are not T, Z, C, Y, X
+        # But keep track of which axes remain
+        squeeze_axes = []
+        for i, (dim, size) in enumerate(shape_list):
+            if size == 1 and dim not in ['T', 'Z', 'C', 'Y', 'X']:
+                squeeze_axes.append(i)
+
+        if squeeze_axes:
+            data = np.squeeze(data, axis=tuple(squeeze_axes))
+            current_axes = [dim for i, dim in enumerate(current_axes) if i not in squeeze_axes]
+
+        # Now transpose to TZCYX order
         target_order = ['T', 'Z', 'C', 'Y', 'X']
 
-        # Find indices for reordering
-        # Handle missing dimensions by adding singleton dimensions
-        reordered = []
-        for ax in target_order:
-            if ax in current_axes:
-                idx = current_axes.index(ax)
-                reordered.append(data.take(indices=range(current_shape[idx]), axis=idx))
-            else:
-                reordered.append(np.expand_dims(data, axis=0))
+        # Add missing dimensions and build transpose order
+        for target_dim in target_order:
+            if target_dim not in current_axes:
+                data = np.expand_dims(data, axis=0)
+                current_axes.insert(0, target_dim)
 
-        # Actually, let's do this more carefully
-        # The returned data should be squeezed and then rearranged
-        data = np.squeeze(data)  # Remove singleton dims from S selection
-
-        # Figure out current dimension order after squeeze
-        # This depends on what dims the CZI has - we'll assume TZCYX or similar
-        # For now, just ensure we have 5D output
-
-        while data.ndim < 5:
-            data = np.expand_dims(data, axis=0)
+        # Calculate transpose indices
+        transpose_idx = [current_axes.index(dim) for dim in target_order]
+        data = np.transpose(data, transpose_idx)
 
         meta = get_czi_metadata(czi_path)
         return data, meta
