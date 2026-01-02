@@ -58,15 +58,16 @@ PREFIX="medaka_embryo"
 # Set specific positions to convert, or leave empty for all:
 POSITIONS=""  # e.g., "0 2 3 4 5 7 8 9" to exclude P1 and P6
 
-# Channel mapping based on your acquisition:
-# BF: probably channel 0 (exclude)
-# AF488 (PBra-Venus): channel 1 - membrane/mesoderm marker
-# mCherry (H2A-mCherry): channel 2 - nuclei marker
-# dextran-647: channel 3 (if present) - exclude
+# Channel mapping based on your acquisition (0-based indexing):
+# From CZI metadata, channels appear to be:
+# Channel 0: Bright (brightfield) - EXCLUDE
+# Channel 1: AF488 (PBra-Venus) - membrane/mesoderm marker
+# Channel 2: mCherry (H2A-mCherry) - nuclei marker
+# Channel 3: AF647 (dextran injection marker) - EXCLUDE
 #
-# We need: membrane (channel 1) and nuclei (channel 2)
-MEMBRANE_CHANNEL=1   # AF488 / PBra-Venus
-NUCLEI_CHANNEL=2     # mCherry / H2A-mCherry
+# If brightfield appears in output, try incrementing both by 1:
+MEMBRANE_CHANNEL=2   # AF488 / PBra-Venus (was 1)
+NUCLEI_CHANNEL=3     # mCherry / H2A-mCherry (was 2)
 
 # Voxel size calibration from your acquisition:
 # 5x objective, 1x tubelens
