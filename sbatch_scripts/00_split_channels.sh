@@ -30,7 +30,7 @@ echo "=========================================="
 module load singularity 2>/dev/null || true
 
 # Set paths
-CONTAINER="${HOME}/copenhagen_workflow.sif"
+CONTAINER="${HOME}/projects/CopenhagenWorkflow/copenhagen_workflow.sif"
 WORKDIR="/scratch-cbe/users/andres.ortiz/zebrafish_test"
 
 # Configuration files to use
