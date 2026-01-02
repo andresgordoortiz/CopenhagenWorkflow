@@ -3,7 +3,7 @@
 #SBATCH --partition=m                    # High-memory partition (no GPU needed)
 #SBATCH --mem=256G                       # 256GB RAM - CZI files can be large
 #SBATCH --cpus-per-task=8                # Multiple CPUs for parallel I/O
-#SBATCH --time=04:00:00                  # 4 hours - adjust based on file size
+#SBATCH --time=01:30:00                  # 1 hour 30 minutes - adjust based on file size
 #SBATCH --output=logs/czi_convert_%j.out
 #SBATCH --error=logs/czi_convert_%j.err
 
