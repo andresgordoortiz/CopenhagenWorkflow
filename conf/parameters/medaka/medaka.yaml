@@ -1,0 +1,166 @@
+# =============================================================================
+# MEDAKA Segmentation Parameters
+# =============================================================================
+# Optimized for Medaka embryo imaging (M34 session style)
+#
+# KEY DIFFERENCES FROM ZEBRAFISH:
+# 1. LOWER RESOLUTION: 5x objective (~2 µm/px) vs zebrafish 10x (~0.65 µm/px)
+# 2. COARSE Z: 100 µm z-step (7 slices over 600µm) vs ~1.7 µm
+# 3. LARGER FIELD: Whole embryo visible vs just a region
+# 4. MEDAKA CELLS: Similar to zebrafish but at lower magnification
+#
+# MEDAKA BIOLOGY AT RELEVANT STAGES:
+# - Gastrulation starts ~7 hpf at 25°C (vs ~6 hpf for zebrafish at 28°C)
+# - Cell sizes similar to zebrafish: nuclei ~8-12 µm, cells ~15-25 µm
+# - BUT at 2 µm/px: nuclei ~4-6 pixels, cells ~8-12 pixels
+# - Very low effective resolution for single-cell analysis!
+#
+# ACQUISITION NOTES (M34):
+# - 5x objective, 1x tubelens
+# - Pixel size: ~2.0 µm (VERIFY from microscope calibration)
+# - Z-step: 100 µm (extremely coarse - essentially 2D + some depth)
+# - Time: 5 min intervals, 48h total
+# - Channels: PBra-Venus (mesoderm), H2A-mCherry (nuclei)
+# =============================================================================
+
+# ============================================================
+# IMAGE PROCESSING
+# ============================================================
+# Smaller patches since images are lower resolution
+# Z is very sparse (only 7 slices), so keep Z patch small
+patch_size: [4, 128, 128]    # Reduced Z due to sparse sampling
+overlap: [1, 16, 16]         # Minimal Z overlap
+crop: [1, 16, 16]
+
+# Tiling for GPU memory - images are smaller due to 5x magnification
+# Typical FOV with 5x and sCMOS might be ~2000x2000 or smaller
+n_tiles: [1, 2, 2]  # [Z, Y, X] - sparse Z needs minimal tiling
+
+axes: 'ZYX'
+file_type: '*.tif'
+
+# ============================================================
+# CHANNEL ASSIGNMENTS - MEDAKA M34
+# ============================================================
+# After CZI conversion with channel mapping:
+#   Channel 0 = PBra-Venus (AF488) - mesoderm/brachyury marker
+#   Channel 1 = H2A-mCherry - nuclear marker
+channel_membrane: 0
+channel_nuclei: 1
+
+# ============================================================
+# CELLPOSE PARAMETERS - MEDAKA LOW MAGNIFICATION
+# ============================================================
+# CRITICAL: At 2 µm/pixel, cells appear MUCH smaller than zebrafish images!
+#
+# Expected sizes at 2 µm/px:
+#   - Nuclei: 8-12 µm diameter → 4-6 pixels
+#   - Cells: 15-25 µm diameter → 8-12 pixels
+#
+# These are at the LOWER LIMIT of Cellpose detection capability!
+# Cellpose works best with cells > 10 pixels diameter.
+#
+# RECOMMENDATION: The low resolution (5x) may not be ideal for
+# single-cell segmentation. Consider:
+# 1. Use for tissue-level analysis (mesoderm domain)
+# 2. Accept lower segmentation accuracy
+# 3. Consider imaging at higher magnification in future
+
+diameter_cellpose: 6.0           # Small nuclei at low magnification
+diameter_cellpose_membrane: 12.0  # Small cells at low magnification
+
+stitch_threshold: 0.3            # Lower threshold due to sparse Z
+flow_threshold: 0.5              # Slightly relaxed
+cellprob_threshold: -2.0         # More permissive - small objects
+
+# Anisotropy correction for Z
+# EXTREME anisotropy: z_spacing / xy_spacing = 100 / 2 = 50!
+# This is essentially 2D imaging with some depth information
+anisotropy: 50.0
+
+gpu: True
+do_3D: False                     # MUST use 2D - Z is too sparse for 3D
+
+# With only 7 Z-slices at 100µm spacing, treat each Z separately
+z_thresh: 1                      # Minimal Z stitching
+
+# Model selection - nuclei model for small objects
+cellpose_model_path: null        # Use built-in models
+# Consider 'nuclei' model as cells are small at this resolution
+
+# ============================================================
+# STARDIST / VOLLSEG NUCLEI PARAMETERS
+# ============================================================
+# WARNING: StarDist 3D may not work well with Z-step = 100 µm
+# The extreme anisotropy means essentially no 3D context
+# Consider treating as 2D time series instead
+#
+# Nuclei at 2 µm/px:
+#   - Diameter: 8-12 µm → 4-6 pixels
+#   - In-plane area: ~12-28 pixels²
+#   - With 100 µm Z-step, nuclei span only ~0.1 slices!
+
+min_size: 10                     # Very small minimum (in voxels)
+max_size: 500                    # Reasonable maximum
+min_size_mask: 5                 # Very permissive mask
+
+# Probability thresholds - be permissive for small objects
+prob_thresh_nuclei: 0.3          # Lower threshold for detection
+nms_thresh_nuclei: 0.5           # Higher NMS to avoid fragmentation
+
+prob_thresh_membrane: null
+nms_thresh_membrane: null
+
+UseProbability: True
+ExpandLabels: False
+slice_merge: False               # No 3D merging - too sparse
+
+# Normalization - important for fluorescence data
+donormalize: True
+lower_perc: 1.0                  # Clip low intensities
+upper_perc: 99.8                 # Clip high intensities
+
+# ============================================================
+# SPECIAL CONSIDERATIONS FOR MEDAKA DATA
+# ============================================================
+#
+# 1. SPARSE Z-SAMPLING:
+#    With 100 µm Z-steps, there's essentially no 3D context.
+#    Each Z-slice is nearly independent. Consider:
+#    - Using 2D segmentation per slice
+#    - Tracking objects across Z as well as T
+#    - Accepting that Z-connectivity will be poor
+#
+# 2. LOW XY RESOLUTION:
+#    At 2 µm/px with 5x objective, single cells are barely resolved.
+#    Good for: Tissue-level analysis, domain boundaries, bulk dynamics
+#    Poor for: Single-cell tracking, division detection, morphometry
+#
+# 3. LONG TIME-LAPSE:
+#    48 hours at 5 min intervals = 576 timepoints
+#    Good temporal resolution for developmental dynamics
+#    Memory management important - process in chunks
+#
+# 4. DUAL MARKERS:
+#    PBra-Venus: Brachyury/mesoderm marker (not all cells positive)
+#    H2A-mCherry: Universal nuclear marker (all cells IF injected)
+#    Note: Some embryos are mCherry-negative - check before analysis!
+#
+# 5. INJECTION VARIABILITY:
+#    - Control: 20pg H2A-mCherry
+#    - Lefty: 15pg H2A-mCherry + 10pg Lefty (actually 20pg from 2 puffs)
+#    - Dextran-647 for injection verification
+#    - Exclude mCherry-negative embryos (P1, P6)
+
+# ============================================================
+# NETWORK ARCHITECTURE (if training custom models)
+# ============================================================
+in_channels: 1
+out_channels: 4
+out_activation: 'tanh'
+norm_method: 'instance'
+background_weight: 1
+flow_weight: 1
+feat_channels: [32, 64, 128]
+num_levels: 3
+depth: 3

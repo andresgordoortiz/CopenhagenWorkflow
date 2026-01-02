@@ -1,0 +1,136 @@
+# =============================================================================
+# MEDAKA Oneat Parameters (Mitosis Detection)
+# =============================================================================
+# Adapted for Medaka embryo imaging with:
+#   - LOW resolution: 5x objective (~2 µm/px)
+#   - SPARSE Z: 100 µm z-step (7 slices)
+#   - 5 minute time intervals
+#
+# IMPORTANT CAVEATS:
+# The pre-trained Oneat models were trained on:
+#   - High-resolution data (Xenopus, ~1 µm/px)
+#   - Dense 3D stacks (~2 µm z-step)
+#   - ~1-2 minute time intervals
+#
+# Your Medaka data has:
+#   - ~2 µm/px (2x lower XY resolution)
+#   - 100 µm z-step (50x sparser Z!)
+#   - 5 min intervals (similar temporal resolution)
+#
+# RECOMMENDATION:
+# The Oneat model may not work reliably with this data because:
+# 1. Mitotic cells are too small to resolve at 5x
+# 2. Z-sparsity means mitotic figures may not be captured
+# 3. Model was trained on different cell appearances
+#
+# Consider:
+# - Manual annotation of divisions
+# - Training a custom model on Medaka data
+# - Using simpler detection based on cell number changes
+# =============================================================================
+
+# ============================================================
+# NETWORK ARCHITECTURE
+# ============================================================
+startfilter: 64
+start_kernel: 7
+mid_kernel: 3
+learning_rate: 1.0e-4
+batch_size: 8               # Reduced for potentially smaller dataset
+epochs: 250
+
+# DenseNet depth configuration
+depth: {'depth_0': 12, 'depth_1': 24, 'depth_2': 16}
+reduction: 0.5
+stage_number: 3
+
+# ============================================================
+# INPUT PATCH SIZE
+# ============================================================
+# CRITICAL: Adjusted for low resolution and sparse Z
+#
+# At 2 µm/px, a mitotic cell (~15 µm) spans only ~8 pixels
+# Need smaller patches since features are smaller
+#
+# Z: With 100 µm spacing, using more than 2-3 slices doesn't make sense
+# The "3D" context is essentially 2D+time
+
+imagex: 32              # Reduced from 48 - smaller cells at 5x
+imagey: 32
+imagez: 3               # Minimal Z - essentially 2D with neighbors
+
+# Temporal context
+# 5 min intervals means ~15-20 minutes total context
+size_tminus: 2          # 2 frames before (10 min)
+size_tplus: 2           # 2 frames after (10 min)
+tshift: 0
+
+# ============================================================
+# DETECTION PARAMETERS
+# ============================================================
+# Tiling for inference - smaller tiles for lower resolution
+n_tiles: [1, 2, 2]      # [Z, Y, X]
+
+# Detection thresholds - VERY conservative due to domain shift
+# The model may produce many false positives on different data
+event_threshold: [1, 0.999]     # [normal, mitosis] - very high threshold
+event_confidence: [1, 0.95]      # Require high confidence
+
+# Non-max suppression
+# Smaller spatial window for lower resolution
+nms_space: 5            # Reduced from 8 - ~10µm at 2µm/px
+nms_time: 3             # ~15 minutes temporal window
+
+# ============================================================
+# EVENT CLASSES
+# ============================================================
+# Binary classification: normal vs mitosis
+event_name: ['normal', 'mitosis']
+event_label: [0, 1]
+
+# Position encoding
+event_position_name: ["x", "y", "z", "t", "h", "w", "d", "c"]
+event_position_label: [0, 1, 2, 3, 4, 5, 6, 7]
+
+# ============================================================
+# PREPROCESSING
+# ============================================================
+file_type: '*.tif'
+normalizeimage: True
+show: False
+
+# ============================================================
+# TRAINING CONFIGURATION
+# ============================================================
+categories_json: 'categories.json'
+cord_json: 'cord.json'
+training_class: NEATDenseVollNet
+training_config: volume_config
+
+# ============================================================
+# MEDAKA-SPECIFIC NOTES
+# ============================================================
+#
+# EXPECTED CHALLENGES:
+# 1. Detection accuracy will likely be LOW due to:
+#    - Small mitotic figures at low magnification
+#    - Sparse Z means mitotic cells may be missed entirely
+#    - Model trained on different species/resolution
+#
+# 2. Cell cycle timing in Medaka:
+#    - At 25°C, cell cycles ~45-60 min during gastrulation
+#    - 5 min intervals give ~9-12 frames per cell cycle
+#    - Temporal resolution is reasonable
+#
+# 3. Alternative approaches:
+#    a) Track cell lineages and infer divisions from track splits
+#    b) Monitor total cell number increases
+#    c) Manual annotation + training custom model
+#    d) Use H2A-mCherry intensity changes (condensed chromatin)
+#
+# VALIDATION RECOMMENDATIONS:
+# 1. Run Oneat with these conservative settings
+# 2. Manually review ALL detections
+# 3. If too many false positives, increase thresholds
+# 4. If too many false negatives, consider alternatives
+# 5. Document detection accuracy for your specific data
