@@ -54,12 +54,17 @@ def get_czi_metadata(czi_path: str) -> Dict:
     """
     if HAS_AICSPYLIBCZI:
         czi = CziFile(czi_path)
-        dims = czi.dims
 
-        # Get dimensions - aicspylibczi uses string keys
+        # Get dimensions - aicspylibczi returns shape as tuple and dims as string
+        # We need to use get_dims_shape() which returns list of tuples [(dim_name, size), ...]
+        dims_shape = czi.get_dims_shape()
+
+        # Build dimension dictionary
         dim_dict = {}
-        for key, val in dims.items():
-            dim_dict[key] = val[1] - val[0]  # (start, end) -> count
+        for dim_tuple in dims_shape:
+            if len(dim_tuple) == 2:
+                dim_name, dim_size = dim_tuple
+                dim_dict[dim_name] = dim_size
 
         # Extract pixel sizes from metadata
         meta = czi.meta
