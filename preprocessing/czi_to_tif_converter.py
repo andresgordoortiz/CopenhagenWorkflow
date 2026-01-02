@@ -55,19 +55,18 @@ def get_czi_metadata(czi_path: str) -> Dict:
     if HAS_AICSPYLIBCZI:
         czi = CziFile(czi_path)
 
-        # Get dimensions - aicspylibczi returns shape as tuple and dims as string
-        # We need to use get_dims_shape() which returns list of tuples [(dim_name, size), ...]
-        dims_shape = czi.get_dims_shape()
+        # Get dimensions using aicspylibczi API
+        # The size property returns the full bounding box shape
+        # czi.dims gives dimension string like "STCZYX"
+        # We need to use the size array along with dims string
+        dims_str = czi.dims  # String like "STCZYX"
+        size = czi.size  # Tuple of sizes for each dimension
 
-        # Build dimension dictionary
+        # Build dimension dictionary from dims string and size tuple
         dim_dict = {}
-        for dim_tuple in dims_shape:
-            if len(dim_tuple) == 2:
-                dim_name, dim_size = dim_tuple
-                dim_dict[dim_name] = dim_size
-
-        # Extract pixel sizes from metadata
-        meta = czi.meta
+        if len(dims_str) == len(size):
+            for i, dim_name in enumerate(dims_str):
+                dim_dict[dim_name] = size[i]
 
         # Default values (will be overridden by actual metadata if available)
         voxel_x = 1.0

@@ -124,7 +124,10 @@ echo "=========================================="
 echo "Checking CZI file structure..."
 echo "=========================================="
 
-singularity exec ${CONTAINER} \
+singularity exec \
+    --bind /groups:/groups \
+    --bind /users:/users \
+    ${CONTAINER} \
     python preprocessing/czi_to_tif_converter.py \
     --input "${INPUT_CZI}" \
     --output "${OUTPUT_DIR}" \
@@ -145,25 +148,28 @@ echo "=========================================="
 echo "Converting CZI to TIF..."
 echo "=========================================="
 
-# Build command
-CMD="python preprocessing/czi_to_tif_converter.py"
-CMD="${CMD} --input '${INPUT_CZI}'"
-CMD="${CMD} --output '${OUTPUT_DIR}'"
-CMD="${CMD} --prefix '${PREFIX}'"
-CMD="${CMD} --membrane-channel ${MEMBRANE_CHANNEL}"
-CMD="${CMD} --nuclei-channel ${NUCLEI_CHANNEL}"
-CMD="${CMD} --voxel-size ${VOXEL_X} ${VOXEL_Y} ${VOXEL_Z}"
-CMD="${CMD} --time-interval ${TIME_INTERVAL}"
+# Build command arguments
+CMD_ARGS=("--input" "${INPUT_CZI}")
+CMD_ARGS+=("--output" "${OUTPUT_DIR}")
+CMD_ARGS+=("--prefix" "${PREFIX}")
+CMD_ARGS+=("--membrane-channel" "${MEMBRANE_CHANNEL}")
+CMD_ARGS+=("--nuclei-channel" "${NUCLEI_CHANNEL}")
+CMD_ARGS+=("--voxel-size" "${VOXEL_X}" "${VOXEL_Y}" "${VOXEL_Z}")
+CMD_ARGS+=("--time-interval" "${TIME_INTERVAL}")
 
 # Add specific positions if specified
 if [ -n "${POSITIONS}" ]; then
-    CMD="${CMD} --positions ${POSITIONS}"
+    CMD_ARGS+=("--positions" ${POSITIONS})
 fi
 
-echo "Running: ${CMD}"
+echo "Running: python preprocessing/czi_to_tif_converter.py ${CMD_ARGS[@]}"
 echo ""
 
-singularity exec ${CONTAINER} ${CMD}
+singularity exec \
+    --bind /groups:/groups \
+    --bind /users:/users \
+    ${CONTAINER} \
+    python preprocessing/czi_to_tif_converter.py "${CMD_ARGS[@]}"
 
 EXIT_CODE=$?
 
